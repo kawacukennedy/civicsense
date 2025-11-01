@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import CameraButton from '../components/CameraButton'
 import TitleInput from '../components/TitleInput'
 import DescriptionInput from '../components/DescriptionInput'
 import LocationPicker from '../components/LocationPicker'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorMessage from '../components/ErrorMessage'
+import SuccessMessage from '../components/SuccessMessage'
 
 interface Location {
   lat: number
@@ -21,6 +25,7 @@ const ReportForm = () => {
   const [anonymous, setAnonymous] = useState(true)
   const [contact, setContact] = useState('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const createReportMutation = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -36,12 +41,10 @@ const ReportForm = () => {
     onSuccess: (data) => {
       // Copy tracking URL to clipboard
       navigator.clipboard.writeText(data.tracking_url)
-      alert(`Report submitted! Tracking URL copied: ${data.tracking_url}`)
-      navigate('/')
-    },
-    onError: (error) => {
-      alert('Failed to submit report. Please try again.')
-      console.error(error)
+      setShowSuccess(true)
+      setTimeout(() => {
+        navigate('/')
+      }, 3000)
     },
   })
 
@@ -83,54 +86,133 @@ const ReportForm = () => {
     createReportMutation.mutate(formData)
   }
 
-  return (
-    <div className="min-h-screen bg-bg p-4">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-6">Report an Issue</h1>
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen bg-bg p-4 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md mx-auto"
+        >
+          <SuccessMessage
+            message="Your report has been submitted successfully! The tracking URL has been copied to your clipboard."
+            onClose={() => navigate('/')}
+          />
+        </motion.div>
+      </div>
+    )
+  }
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="min-h-screen bg-bg p-4"
+    >
+      <div className="max-w-md mx-auto">
+        <motion.h1
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-2xl font-bold text-center mb-6"
+        >
+          Report an Issue
+        </motion.h1>
+
+        {createReportMutation.isError && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-6"
+          >
+            <ErrorMessage
+              message="Failed to submit report. Please check your connection and try again."
+              onRetry={() => createReportMutation.reset()}
+            />
+          </motion.div>
+        )}
+
+        <motion.form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           {/* Camera Button */}
-          <div className="flex justify-center">
+          <motion.div
+            className="flex justify-center"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             <CameraButton
               onFileSelect={handleFileSelect}
               disabled={createReportMutation.isPending}
             />
-          </div>
+          </motion.div>
 
           {/* Media Preview */}
           {previewUrl && (
-            <div className="flex justify-center">
+            <motion.div
+              className="flex justify-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
               <img
                 src={previewUrl}
                 alt="Selected media"
-                className="w-32 h-32 object-cover rounded-lg"
+                className="w-32 h-32 object-cover rounded-lg shadow-md"
               />
-            </div>
+            </motion.div>
           )}
 
           {/* Title */}
-          <TitleInput
-            value={title}
-            onChange={setTitle}
-            disabled={createReportMutation.isPending}
-          />
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <TitleInput
+              value={title}
+              onChange={setTitle}
+              disabled={createReportMutation.isPending}
+            />
+          </motion.div>
 
           {/* Description */}
-          <DescriptionInput
-            value={description}
-            onChange={setDescription}
-            disabled={createReportMutation.isPending}
-          />
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <DescriptionInput
+              value={description}
+              onChange={setDescription}
+              disabled={createReportMutation.isPending}
+            />
+          </motion.div>
 
           {/* Location */}
-          <LocationPicker
-            location={location}
-            onLocationChange={setLocation}
-            disabled={createReportMutation.isPending}
-          />
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <LocationPicker
+              location={location}
+              onLocationChange={setLocation}
+              disabled={createReportMutation.isPending}
+            />
+          </motion.div>
 
           {/* Anonymous Toggle */}
-          <div className="flex items-center space-x-2">
+          <motion.div
+            className="flex items-center space-x-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7 }}
+          >
             <input
               id="anonymous"
               type="checkbox"
@@ -142,11 +224,15 @@ const ReportForm = () => {
             <label htmlFor="anonymous" className="text-sm">
               Keep this report anonymous (default)
             </label>
-          </div>
+          </motion.div>
 
           {/* Contact Input */}
           {!anonymous && (
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8 }}
+            >
               <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
                 Contact info (optional)
               </label>
@@ -159,20 +245,35 @@ const ReportForm = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 disabled={createReportMutation.isPending}
               />
-            </div>
+            </motion.div>
           )}
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={createReportMutation.isPending || !title.trim() || !location}
-            className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
           >
-            {createReportMutation.isPending ? 'Submitting...' : 'Submit Report'}
-          </button>
-        </form>
+            <motion.button
+              type="submit"
+              disabled={createReportMutation.isPending || !title.trim() || !location}
+              className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {createReportMutation.isPending ? (
+                <>
+                  <LoadingSpinner size="sm" />
+                  <span>Submitting Report...</span>
+                </>
+              ) : (
+                <span>Submit Report</span>
+              )}
+            </motion.button>
+          </motion.div>
+        </motion.form>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

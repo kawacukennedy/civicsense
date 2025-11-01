@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import ThemeToggle from '../components/ThemeToggle'
 
 const Landing = () => {
   const { data: reports } = useQuery({
@@ -18,13 +19,16 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-primary">CivicSense</h1>
-          <div className="flex space-x-4">
-            <Link to="/map" className="text-primary hover:underline text-sm">Map</Link>
-            <Link to="/feed" className="text-primary hover:underline text-sm">Feed</Link>
-            <Link to="/volunteer" className="text-primary hover:underline text-sm">Volunteer</Link>
+          <div className="flex items-center space-x-4">
+            <div className="flex space-x-4">
+              <Link to="/map" className="text-primary hover:underline text-sm dark:text-blue-400">Map</Link>
+              <Link to="/feed" className="text-primary hover:underline text-sm dark:text-blue-400">Feed</Link>
+              <Link to="/volunteer" className="text-primary hover:underline text-sm dark:text-blue-400">Volunteer</Link>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>

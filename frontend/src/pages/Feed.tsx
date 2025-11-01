@@ -1,5 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorMessage from '../components/ErrorMessage'
 
 interface Report {
   id: string
@@ -49,90 +52,154 @@ const Feed = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-bg p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-bg p-4"
+      >
         <div className="max-w-md mx-auto">
-          <h1 className="text-2xl font-bold mb-4">Public Feed</h1>
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold mb-4"
+          >
+            Public Feed
+          </motion.h1>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow p-4 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-              </div>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white rounded-lg shadow p-4"
+              >
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </motion.div>
             ))}
           </div>
+          <div className="mt-8 flex justify-center">
+            <LoadingSpinner message="Loading reports..." />
+          </div>
         </div>
-      </div>
+      </motion.div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-bg p-4">
-        <div className="max-w-md mx-auto text-center">
-          <h1 className="text-2xl font-bold mb-4">Public Feed</h1>
-          <p className="text-danger">Failed to load reports. Please try again.</p>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-bg p-4"
+      >
+        <div className="max-w-md mx-auto">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold mb-4"
+          >
+            Public Feed
+          </motion.h1>
+          <ErrorMessage
+            message="Failed to load reports. Please check your connection and try again."
+            onRetry={() => window.location.reload()}
+          />
         </div>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-bg p-4">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-bg p-4"
+    >
       <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Public Feed</h1>
+        <motion.h1
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-2xl font-bold mb-4"
+        >
+          Public Feed
+        </motion.h1>
 
         <div className="space-y-4">
           {reports?.data?.length === 0 ? (
-            <div className="text-center py-8">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-8"
+            >
               <p className="text-muted">No reports yet. Be the first to report an issue!</p>
               <Link
                 to="/report"
-                className="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-lg"
+                className="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Report Issue
               </Link>
-            </div>
+            </motion.div>
           ) : (
-            reports?.data?.map((report: Report) => (
-              <Link key={report.id} to={`/reports/${report.id}`} className="block">
-                <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-lg flex-1 pr-2">{report.title}</h3>
-                    <span className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority?.score || report.priority_score)}`}>
-                      {getPriorityLabel(report.priority?.score || report.priority_score)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-muted">
-                    <span>{formatTimeAgo(report.created_at)}</span>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          // Handle confirm
-                        }}
-                        className="text-primary hover:underline"
-                      >
-                        👍 Confirm
-                      </button>
-                      <span className="text-primary">View Details →</span>
+            reports?.data?.map((report: Report, index: number) => (
+              <motion.div
+                key={report.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link to={`/reports/${report.id}`} className="block">
+                  <motion.div
+                    className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold text-lg flex-1 pr-2">{report.title}</h3>
+                      <span className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority?.score || report.priority_score)}`}>
+                        {getPriorityLabel(report.priority?.score || report.priority_score)}
+                      </span>
                     </div>
-                  </div>
-                </div>
-              </Link>
+                    <div className="flex items-center justify-between text-sm text-muted">
+                      <span>{formatTimeAgo(report.created_at)}</span>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            // Handle confirm
+                          }}
+                          className="text-primary hover:underline"
+                        >
+                          👍 Confirm
+                        </button>
+                        <span className="text-primary">View Details →</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
+              </motion.div>
             ))
           )}
         </div>
 
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
+        <motion.div
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+        >
           <Link
             to="/report"
-            className="bg-primary text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700"
+            className="bg-primary text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
           >
             Report Issue
           </Link>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
