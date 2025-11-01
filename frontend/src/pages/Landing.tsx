@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 
