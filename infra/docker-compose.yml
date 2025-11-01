@@ -21,11 +21,14 @@ services:
       - "8000:8000"
     volumes:
       - ../backend:/app
+      - uploads:/app/uploads
     environment:
       - DATABASE_URL=postgresql://user:password@postgres:5432/civicsense
       - SECRET_KEY=dev-secret-key
+      - DEMO_MODE=true
     depends_on:
       - postgres
+    command: sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   postgres:
     image: postgres:15
