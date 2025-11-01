@@ -53,6 +53,23 @@ CivicSense is a mobile-first web app that allows citizens to report civic and cl
 
 The app runs in demo mode by default with mock data and services. No external API keys required!
 
+### Deployment
+
+#### Frontend (Vercel)
+The frontend is configured for Vercel deployment:
+
+1. Connect your GitHub repo to Vercel
+2. Set the root directory to `frontend/`
+3. Vercel will automatically detect the Vite configuration
+4. The app will be deployed with the API proxy configured
+
+#### Backend (Render/Railway)
+Deploy the backend separately:
+1. Use the `backend/` directory
+2. Set environment variables from `.env.example`
+3. Deploy to Render, Railway, or similar platform
+4. Update the frontend API URLs to point to your deployed backend
+
 ### Manual Testing
 
 To test the full flow:
