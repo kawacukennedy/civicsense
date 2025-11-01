@@ -5,6 +5,7 @@ import ReportForm from './pages/ReportForm'
 import MapView from './pages/MapView'
 import Feed from './pages/Feed'
 import VolunteerDashboard from './pages/VolunteerDashboard'
+import ReportDetail from './pages/ReportDetail'
 import './App.css'
 
 const queryClient = new QueryClient()
@@ -20,6 +21,7 @@ function App() {
             <Route path="/map" element={<MapView />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/volunteer" element={<VolunteerDashboard />} />
+            <Route path="/reports/:id" element={<ReportDetail />} />
           </Routes>
         </div>
       </Router>

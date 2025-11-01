@@ -120,3 +120,30 @@ def get_report(report_id: str):
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
     return report
+
+@router.post("/{report_id}/message", response_model=dict)
+def generate_authority_message(report_id: str, format: str = "mailto", target: str = "municipal@city.gov"):
+    report = next((r for r in reports_db if r["id"] == report_id), None)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    subject = f"[CivicSense] Urgent: {report['title']}"
+    body = f"""Date: {report['created_at']}
+Location: {report['lat']}, {report['lng']}
+Issue: {report['title']}
+Description: {report['description'] or 'No description provided'}
+Priority: {report['priority']['level']} ({report['priority']['score']})
+Media: {', '.join(report['media_urls']) if report['media_urls'] else 'None'}
+
+Please acknowledge receipt and provide expected ETA for resolution.
+"""
+
+    if format == "mailto":
+        mailto_link = f"mailto:{target}?subject={subject}&body={body}"
+        return {"mailto": mailto_link}
+    elif format == "whatsapp":
+        whatsapp_text = f"{subject}\n\n{body}".replace('\n', '%0A')
+        wa_link = f"https://wa.me/?text={whatsapp_text}"
+        return {"wa_link": wa_link}
+
+    return {"message": "Format not supported"}

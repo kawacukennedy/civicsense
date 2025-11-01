@@ -94,20 +94,31 @@ const Feed = () => {
             </div>
           ) : (
             reports?.data?.map((report: Report) => (
-              <div key={report.id} className="bg-white rounded-lg shadow p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-lg flex-1 pr-2">{report.title}</h3>
-                  <div className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority_score)}`}>
-                    {getPriorityLabel(report.priority_score)}
+              <Link key={report.id} to={`/reports/${report.id}`} className="block">
+                <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-semibold text-lg flex-1 pr-2">{report.title}</h3>
+                    <span className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority?.score || report.priority_score)}`}>
+                      {getPriorityLabel(report.priority?.score || report.priority_score)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-muted">
+                    <span>{formatTimeAgo(report.created_at)}</span>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          // Handle confirm
+                        }}
+                        className="text-primary hover:underline"
+                      >
+                        👍 Confirm
+                      </button>
+                      <span className="text-primary">View Details →</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-sm text-muted">
-                  <span>{formatTimeAgo(report.created_at)}</span>
-                  <button className="text-primary hover:underline">
-                    👍 Confirm
-                  </button>
-                </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
