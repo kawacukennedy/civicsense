@@ -233,34 +233,47 @@ const Feed = () => {
               >
                 <Link to={`/reports/${report.id}`} className="block">
                   <motion.div
-                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-md transition-shadow touch-manipulation"
-                    whileHover={{ scale: 1.02 }}
+                    className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-5 hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-300 group"
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-lg flex-1 pr-2">{report.title}</h3>
-                      <span className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority?.score ?? report.priority_score ?? 50)}`}>
-                        {getPriorityLabel(report.priority?.score ?? report.priority_score ?? 50)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-muted">
-                      <span>{formatTimeAgo(report.created_at)}</span>
-                      <div className="flex space-x-2">
+                    <div className="flex items-start justify-between mb-3">
+                       <h3 className="font-semibold text-lg flex-1 pr-2 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                         {report.title}
+                       </h3>
+                       <motion.span
+                         whileHover={{ scale: 1.1 }}
+                         className={`px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-md ${getPriorityColor(report.priority?.score ?? report.priority_score ?? 50)}`}
+                       >
+                         {getPriorityLabel(report.priority?.score ?? report.priority_score ?? 50)}
+                       </motion.span>
+                     </div>
+                     <div className="flex items-center justify-between text-sm">
+                       <span className="text-gray-500 dark:text-gray-400 font-medium">{formatTimeAgo(report.created_at)}</span>
+                       <div className="flex items-center space-x-3">
                          {isAuthenticated && (
-                           <button
+                           <motion.button
+                             whileHover={{ scale: 1.05 }}
+                             whileTap={{ scale: 0.95 }}
                              onClick={(e) => {
                                e.preventDefault()
                                confirmMutation.mutate(report.id)
                              }}
                              disabled={confirmMutation.isPending}
-                             className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                             className="flex items-center space-x-1 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors px-2 py-1 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20"
                            >
-                             {confirmMutation.isPending ? 'Confirming...' : '👍 Confirm'}
-                           </button>
+                             <span>{confirmMutation.isPending ? '⏳' : '👍'}</span>
+                             <span>{confirmMutation.isPending ? 'Confirming...' : 'Confirm'}</span>
+                           </motion.button>
                          )}
-                        <span className="text-primary">View Details →</span>
-                      </div>
-                    </div>
+                         <span className="text-blue-600 dark:text-blue-400 font-medium group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors flex items-center space-x-1">
+                           <span>View Details</span>
+                           <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                           </svg>
+                         </span>
+                       </div>
+                     </div>
                   </motion.div>
                 </Link>
               </motion.div>
@@ -269,16 +282,19 @@ const Feed = () => {
         </div>
 
         <motion.div
-          className="fixed bottom-6 left-1/2 transform -translate-x-1/2"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50"
+          initial={{ opacity: 0, scale: 0, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
         >
           <Link
             to="/report"
-            className="bg-primary text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+            className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-8 py-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 font-semibold text-lg flex items-center space-x-2 group hover:scale-105"
           >
-            Report Issue
+            <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Report Issue</span>
           </Link>
         </motion.div>
       </div>

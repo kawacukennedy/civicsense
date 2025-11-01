@@ -140,17 +140,20 @@ const ReportForm = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-bg p-4"
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4"
     >
       <div className="max-w-md mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: -10 }}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-2xl font-bold text-center mb-6"
+          className="text-center mb-8"
         >
-          Report an Issue
-        </motion.h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Report an Issue
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">Help make your community better</p>
+        </motion.div>
 
         {createReportMutation.isError && (
           <motion.div
@@ -167,10 +170,10 @@ const ReportForm = () => {
 
         <motion.form
           onSubmit={handleSubmit}
-          className="space-y-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-6 space-y-6"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
         >
           {/* Camera Button */}
           <motion.div
@@ -314,7 +317,7 @@ const ReportForm = () => {
             <motion.button
               type="submit"
               disabled={createReportMutation.isPending || !isValid || !location}
-              className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white py-4 rounded-xl font-semibold shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 transition-all duration-300 hover:scale-[1.02] disabled:hover:scale-100"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -324,7 +327,12 @@ const ReportForm = () => {
                   <span>Submitting Report...</span>
                 </>
               ) : (
-                <span>Submit Report</span>
+                <>
+                  <span>Submit Report</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </>
               )}
             </motion.button>
           </motion.div>
