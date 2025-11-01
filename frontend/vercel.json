@@ -4,7 +4,7 @@
   "installCommand": "npm install",
   "framework": "vite",
   "env": {
-    "VITE_API_BASE_URL": "https://civicsense-backend.onrender.com"
+    "VITE_API_BASE_URL": "https://civicsense-qv0i.onrender.com"
   },
   "headers": [
     {
