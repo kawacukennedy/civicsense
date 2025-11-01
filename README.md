@@ -19,8 +19,10 @@ CivicSense is a mobile-first web app that allows citizens to report civic and cl
 ## Tech Stack
 
 - **Frontend**: React + TypeScript + Vite + TailwindCSS + Leaflet + Framer Motion
-- **Backend**: FastAPI + Python 3.11 + SQLAlchemy + Postgres/SQLite
+- **Backend**: FastAPI + Python 3.11 + SQLAlchemy + Postgres/SQLite + JWT Auth
+- **Database**: SQLAlchemy ORM with SQLite (dev) / PostgreSQL (prod)
 - **ML**: ONNX models for image/text classification + duplicate detection
+- **Security**: JWT authentication, password hashing, CORS, input validation
 - **Infrastructure**: Docker + Docker Compose for local dev
 
 ## Getting Started
@@ -51,38 +53,51 @@ CivicSense is a mobile-first web app that allows citizens to report civic and cl
 
 ### Demo Mode
 
-The app runs in demo mode by default with mock data and services. No external API keys required!
+The app runs in demo mode by default with seeded data and services. No external API keys required!
 
-### Deployment
-
-#### Frontend (Vercel)
-The frontend is configured for Vercel deployment:
-
-1. Connect your GitHub repo to Vercel
-2. Set the root directory to `frontend/`
-3. Vercel will automatically detect the Vite configuration
-4. The app will be deployed with the API proxy configured
-
-#### Backend (Render/Railway)
-Deploy the backend separately:
-1. Use the `backend/` directory
-2. Set environment variables from `.env.example`
-3. Deploy to Render, Railway, or similar platform
-4. Update the frontend API URLs to point to your deployed backend
+**Demo Accounts:**
+- **Volunteer**: `volunteer@civicsense.demo` / `demo123`
+- **Admin**: `admin@civicsense.demo` / `admin123`
 
 ### Manual Testing
 
 To test the full flow:
 1. Visit http://localhost:3000
-2. Click "Report Issue"
+2. Click "Report Issue" (works without login)
 3. Fill out the form (location will auto-detect)
 4. Submit the report
 5. View it on the map and in the feed
-6. Click on a report to see details and send to authorities
+6. Login as volunteer to claim and resolve reports
+7. Click on a report to see details and send to authorities
+
+### Database Seeding
+
+After starting the backend, run:
+```bash
+./scripts/seed_demo_data.sh
+```
+
+This creates demo users and sample reports in the database.
 
 ## API Documentation
 
-API docs available at `/api/v1/docs` when running the backend.
+- **Interactive API Docs**: `/api/v1/docs` (Swagger UI)
+- **Alternative Docs**: `/api/v1/redoc` (ReDoc)
+- **OpenAPI Schema**: `/api/v1/openapi.json`
+
+### Authentication
+The API uses JWT (JSON Web Tokens) for authentication:
+- Register: `POST /api/v1/auth/register`
+- Login: `POST /api/v1/auth/login`
+- Use Bearer token in `Authorization` header for protected endpoints
+
+### Key Endpoints
+- `POST /api/v1/reports` - Create report (anonymous allowed)
+- `GET /api/v1/reports` - List reports with filtering
+- `GET /api/v1/reports/{id}` - Get report details
+- `POST /api/v1/reports/{id}/claim` - Claim report (volunteers)
+- `POST /api/v1/reports/{id}/resolve` - Resolve report
+- `POST /api/v1/reports/{id}/message` - Generate authority message
 
 ## Contributing
 
