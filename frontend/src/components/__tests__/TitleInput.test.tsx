@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
 import TitleInput from '../TitleInput'
 
 describe('TitleInput', () => {
@@ -8,7 +9,7 @@ describe('TitleInput', () => {
   })
 
   it('calls onChange when typing', () => {
-    const mockOnChange = jest.fn()
+    const mockOnChange = vi.fn()
     render(<TitleInput value="" onChange={mockOnChange} />)
 
     const input = screen.getByRole('textbox')

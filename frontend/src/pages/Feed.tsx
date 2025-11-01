@@ -10,7 +10,8 @@ interface Report {
   lat: number
   lng: number
   status: string
-  priority_score: number
+  priority_score?: number
+  priority?: { score: number; level: string }
   created_at: string
 }
 

@@ -26,7 +26,7 @@ const VolunteerDashboard = () => {
   })
 
   const claimMutation = useMutation({
-    mutationFn: async (reportId: string) => {
+    mutationFn: async (_reportId: string) => {
       // Mock claim - in real app, this would be a POST request
       return { status: 'in_progress', assigned_to: 'volunteer@example.com' }
     },
@@ -36,7 +36,7 @@ const VolunteerDashboard = () => {
   })
 
   const resolveMutation = useMutation({
-    mutationFn: async (reportId: string) => {
+    mutationFn: async (_reportId: string) => {
       // Mock resolve
       return { status: 'resolved' }
     },

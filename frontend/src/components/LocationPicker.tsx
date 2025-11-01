@@ -35,7 +35,7 @@ const LocationPicker = ({ location, onLocationChange, disabled }: LocationPicker
         onLocationChange(newLocation)
         setLoading(false)
       },
-      (err) => {
+      () => {
         setError('Unable to retrieve your location.')
         setLoading(false)
       },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { useQuery } from '@tanstack/react-query'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
@@ -24,7 +24,7 @@ interface Report {
 const MapView = () => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
 
-  const { data: reports, isLoading } = useQuery({
+  const { data: reports } = useQuery({
     queryKey: ['reports'],
     queryFn: async () => {
       const response = await fetch('http://localhost:8000/api/v1/reports')
