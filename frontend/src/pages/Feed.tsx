@@ -161,8 +161,8 @@ const Feed = () => {
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold text-lg flex-1 pr-2">{report.title}</h3>
-                      <span className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority?.score || report.priority_score)}`}>
-                        {getPriorityLabel(report.priority?.score || report.priority_score)}
+                      <span className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority?.score ?? report.priority_score ?? 50)}`}>
+                        {getPriorityLabel(report.priority?.score ?? report.priority_score ?? 50)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm text-muted">
