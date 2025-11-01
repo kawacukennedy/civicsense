@@ -90,8 +90,8 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": "Internal server error"}
     )
 
-@app.get("/api/v1/health", response_model=None)
-def health_check(db: Session = get_db()):
+@app.get("/api/v1/health")
+def health_check(db: Session = get_db()) -> dict:
     """Health check endpoint."""
     try:
         # Test database connection
