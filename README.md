@@ -25,6 +25,34 @@ CivicSense is a mobile-first web app that allows citizens to report civic and cl
 - **Security**: JWT authentication, password hashing, CORS, input validation
 - **Infrastructure**: Docker + Docker Compose for local dev
 
+## Production Deployment
+
+The app is deployed and available at:
+
+- **Frontend**: https://civicsense.vercel.app
+- **Backend API**: https://civicsense-qv0i.onrender.com
+- **API Docs**: https://civicsense-qv0i.onrender.com/api/v1/docs
+
+### Usage Instructions
+
+1. **Report an Issue**: Visit the frontend and click "Report Issue" - no login required
+2. **Browse Reports**: View the public feed and map of all reports
+3. **Volunteer Login**: Use demo accounts to claim and resolve reports
+4. **Authority Messaging**: Generate formatted messages for municipal departments
+
+**Demo Accounts:**
+- **Volunteer**: `volunteer@civicsense.demo` / `demo123`
+- **Admin**: `admin@civicsense.demo` / `admin123`
+
+### Features in Production
+
+- Anonymous reporting with AI verification
+- Real-time map and feed views
+- Volunteer dashboard for issue resolution
+- Priority scoring and duplicate detection
+- Mobile-optimized interface
+- Rate limiting and security headers
+
 ## Getting Started
 
 ### Prerequisites
@@ -81,9 +109,10 @@ This creates demo users and sample reports in the database.
 
 ## API Documentation
 
-- **Interactive API Docs**: `/api/v1/docs` (Swagger UI)
-- **Alternative Docs**: `/api/v1/redoc` (ReDoc)
-- **OpenAPI Schema**: `/api/v1/openapi.json`
+- **Interactive API Docs**: https://civicsense-qv0i.onrender.com/api/v1/docs (Swagger UI)
+- **Alternative Docs**: https://civicsense-qv0i.onrender.com/api/v1/redoc (ReDoc)
+- **OpenAPI Schema**: https://civicsense-qv0i.onrender.com/api/v1/openapi.json
+- **Health Check**: https://civicsense-qv0i.onrender.com/api/v1/health
 
 ### Authentication
 The API uses JWT (JSON Web Tokens) for authentication:
