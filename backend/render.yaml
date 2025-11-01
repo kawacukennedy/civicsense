@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: civicsense-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true
+    healthCheckPath: /api/v1/health
+    buildCommand: docker build -t civicsense-api .
+    startCommand: docker run -p $PORT:8000 civicsense-api
