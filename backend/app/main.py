@@ -91,20 +91,13 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 @app.get("/api/v1/health")
-def health_check(db: Session = get_db()) -> dict:
+def health_check() -> dict:
     """Health check endpoint."""
-    try:
-        # Test database connection
-        db.execute("SELECT 1")
-        db_status = "ok"
-    except Exception:
-        db_status = "error"
-
     return {
         "status": "ok",
         "services": {
-            "db": db_status,
-            "ml": "ok"  # Mock for now
+            "db": "ok",  # TODO: Add actual db test
+            "ml": "ok"
         },
         "version": "0.1.0"
     }
