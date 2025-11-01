@@ -41,19 +41,27 @@ CivicSense is a mobile-first web app that allows citizens to report civic and cl
 
 2. Start the development environment:
    ```bash
-   docker-compose up --build
+   docker-compose -f infra/docker-compose.yml up --build
    ```
 
-3. Seed demo data:
-   ```bash
-   ./scripts/seed_demo_data.sh
-   ```
-
-4. Open http://localhost:3000 for the frontend, http://localhost:8000 for the backend API.
+3. The app will be available at:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+   - API Docs: http://localhost:8000/docs
 
 ### Demo Mode
 
-The app includes a demo mode with seeded data that works without external API keys. Use the pre-seeded volunteer account: `volunteer@example.com` / `demo123`.
+The app runs in demo mode by default with mock data and services. No external API keys required!
+
+### Manual Testing
+
+To test the full flow:
+1. Visit http://localhost:3000
+2. Click "Report Issue"
+3. Fill out the form (location will auto-detect)
+4. Submit the report
+5. View it on the map and in the feed
+6. Click on a report to see details and send to authorities
 
 ## API Documentation
 
