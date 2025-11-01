@@ -1,8 +1,126 @@
+import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
+
+interface Report {
+  id: string
+  title: string
+  lat: number
+  lng: number
+  status: string
+  priority_score: number
+  created_at: string
+}
+
 const Feed = () => {
+  const { data: reports, isLoading, error } = useQuery({
+    queryKey: ['reports'],
+    queryFn: async () => {
+      const response = await fetch('http://localhost:8000/api/v1/reports')
+      if (!response.ok) {
+        throw new Error('Failed to fetch reports')
+      }
+      return response.json()
+    },
+  })
+
+  const getPriorityColor = (score: number) => {
+    if (score >= 67) return 'bg-danger'
+    if (score >= 34) return 'bg-accent'
+    return 'bg-muted'
+  }
+
+  const getPriorityLabel = (score: number) => {
+    if (score >= 67) return 'High'
+    if (score >= 34) return 'Medium'
+    return 'Low'
+  }
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffHours / 24)
+
+    if (diffDays > 0) return `${diffDays}d ago`
+    if (diffHours > 0) return `${diffHours}h ago`
+    return 'Just now'
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-bg p-4">
+        <div className="max-w-md mx-auto">
+          <h1 className="text-2xl font-bold mb-4">Public Feed</h1>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow p-4 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-bg p-4">
+        <div className="max-w-md mx-auto text-center">
+          <h1 className="text-2xl font-bold mb-4">Public Feed</h1>
+          <p className="text-danger">Failed to load reports. Please try again.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Public Feed</h1>
-      <p>Report feed coming soon...</p>
+    <div className="min-h-screen bg-bg p-4">
+      <div className="max-w-md mx-auto">
+        <h1 className="text-2xl font-bold mb-4">Public Feed</h1>
+
+        <div className="space-y-4">
+          {reports?.data?.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-muted">No reports yet. Be the first to report an issue!</p>
+              <Link
+                to="/report"
+                className="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-lg"
+              >
+                Report Issue
+              </Link>
+            </div>
+          ) : (
+            reports?.data?.map((report: Report) => (
+              <div key={report.id} className="bg-white rounded-lg shadow p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-semibold text-lg flex-1 pr-2">{report.title}</h3>
+                  <div className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(report.priority_score)}`}>
+                    {getPriorityLabel(report.priority_score)}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm text-muted">
+                  <span>{formatTimeAgo(report.created_at)}</span>
+                  <button className="text-primary hover:underline">
+                    👍 Confirm
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
+          <Link
+            to="/report"
+            className="bg-primary text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700"
+          >
+            Report Issue
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }
