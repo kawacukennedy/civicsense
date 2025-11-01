@@ -27,52 +27,105 @@ const Landing = ({ onAuthClick }: LandingProps) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-md mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <motion.h1
+      <header className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-2xl font-bold text-gray-900 dark:text-white"
+              className="flex-shrink-0"
             >
-              CivicSense
-            </motion.h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                CivicSense
+              </h1>
+            </motion.div>
+
+            {/* Navigation Links - Hidden on mobile, shown on larger screens */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <Link
+                to="/map"
+                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium transition-colors relative group"
+              >
+                Map
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 dark:bg-white group-hover:w-full transition-all duration-200"></span>
+              </Link>
+              <Link
+                to="/feed"
+                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium transition-colors relative group"
+              >
+                Feed
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 dark:bg-white group-hover:w-full transition-all duration-200"></span>
+              </Link>
+              {isAuthenticated && user?.role === 'volunteer' && (
+                <Link
+                  to="/volunteer"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium transition-colors relative group"
+                >
+                  Dashboard
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 dark:bg-white group-hover:w-full transition-all duration-200"></span>
+                </Link>
+              )}
+            </nav>
+
+            {/* Right side actions */}
             <div className="flex items-center space-x-3">
               <ThemeToggle />
+
               {isAuthenticated ? (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-300 hidden sm:inline font-medium">
-                    Hi, {user?.name}
-                  </span>
+                <div className="flex items-center space-x-3">
+                  <div className="hidden sm:flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                        {user?.name?.charAt(0)?.toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                      {user?.name}
+                    </span>
+                  </div>
                   <button
                     onClick={logout}
-                    className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors"
+                    className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors px-3 py-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     Logout
                   </button>
                 </div>
               ) : (
                 <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={onAuthClick}
-                  className="text-sm bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                  className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   Sign In
                 </motion.button>
               )}
             </div>
           </div>
-          {/* Navigation Links */}
-          <nav className="flex space-x-6 mt-4 overflow-x-auto pb-1">
-            <Link to="/map" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium whitespace-nowrap transition-colors">
+
+          {/* Mobile Navigation - Shown only on mobile */}
+          <nav className="md:hidden flex items-center justify-center space-x-6 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <Link
+              to="/map"
+              className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium transition-colors"
+            >
               Map
             </Link>
-            <Link to="/feed" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium whitespace-nowrap transition-colors">
+            <Link
+              to="/feed"
+              className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium transition-colors"
+            >
               Feed
             </Link>
             {isAuthenticated && user?.role === 'volunteer' && (
-              <Link to="/volunteer" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium whitespace-nowrap transition-colors">
+              <Link
+                to="/volunteer"
+                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white text-sm font-medium transition-colors"
+              >
                 Dashboard
               </Link>
             )}
