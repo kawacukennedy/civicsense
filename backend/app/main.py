@@ -12,8 +12,6 @@ from contextlib import asynccontextmanager
 import logging
 import os
 import sentry_sdk
-from sentry_sdk.integrations.fastapi import FastAPIIntegration
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from .database import engine, get_db
 from .models import Base
 from .api import api_router
@@ -43,14 +41,8 @@ async def lifespan(app: FastAPI):
 # Initialize Sentry for error tracking
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
-    integrations=[
-        FastAPIIntegration(),
-        SqlalchemyIntegration(),
-    ],
     # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring
     traces_sample_rate=1.0,
-    # Set profiles_sample_rate to 1.0 to profile 100% of sampled transactions
-    profiles_sample_rate=1.0,
 )
 
 # Configure logging
