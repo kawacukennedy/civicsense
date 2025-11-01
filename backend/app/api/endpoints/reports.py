@@ -1,20 +1,15 @@
 from typing import List
-from fastapi import APIRouter, HTTPException
+import uuid
+from datetime import datetime
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
+import aiofiles
+import os
 
 router = APIRouter()
 
-# Mock data for now
+# In-memory storage for demo (use database in production)
 reports_db = []
-
-class ReportCreate(BaseModel):
-    title: str
-    description: str | None = None
-    lat: float
-    lng: float
-    accuracy_m: float | None = None
-    anonymous: bool = True
-    reporter_contact: str | None = None
 
 class ReportSummary(BaseModel):
     id: str
@@ -25,40 +20,102 @@ class ReportSummary(BaseModel):
     priority_score: int
     created_at: str
 
+class ReportDetail(BaseModel):
+    id: str
+    title: str
+    description: str | None
+    lat: float
+    lng: float
+    media_urls: List[str]
+    verification: dict
+    priority: dict
+    status: str
+    created_at: str
+    updated_at: str
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 @router.post("/", response_model=dict)
-def create_report(report: ReportCreate):
-    # Mock implementation
-    report_id = f"report_{len(reports_db) + 1}"
+async def create_report(
+    title: str = Form(...),
+    description: str = Form(""),
+    lat: float = Form(...),
+    lng: float = Form(...),
+    accuracy_m: float = Form(None),
+    anonymous: bool = Form(True),
+    reporter_contact: str = Form(None),
+    media: UploadFile = File(None)
+):
+    report_id = str(uuid.uuid4())
+
+    media_urls = []
+    if media:
+        # Save uploaded file
+        file_extension = os.path.splitext(media.filename)[1]
+        filename = f"{report_id}{file_extension}"
+        file_path = os.path.join(UPLOAD_DIR, filename)
+
+        async with aiofiles.open(file_path, 'wb') as f:
+            content = await media.read()
+            await f.write(content)
+
+        media_urls.append(f"/uploads/{filename}")
+
+    # Mock verification and priority
+    verification = {
+        "score": 0.85,
+        "labels": ["pothole"],
+        "is_duplicate": False,
+        "explanation": "AI analysis complete"
+    }
+
+    priority = {
+        "score": 75,
+        "level": "high",
+        "factors": {"verification": 0.85, "location": 0.8}
+    }
+
+    created_at = datetime.utcnow().isoformat() + "Z"
+
     new_report = {
         "id": report_id,
-        "title": report.title,
-        "description": report.description,
-        "lat": report.lat,
-        "lng": report.lng,
-        "status": "created",
-        "priority_score": 50,  # Mock
-        "created_at": "2025-11-01T00:00:00Z",
-        "tracking_url": f"/reports/{report_id}"
+        "title": title,
+        "description": description,
+        "lat": lat,
+        "lng": lng,
+        "media_urls": media_urls,
+        "verification": verification,
+        "priority": priority,
+        "status": "verified",
+        "created_at": created_at,
+        "updated_at": created_at
     }
+
     reports_db.append(new_report)
+
     return {
         "id": report_id,
-        "tracking_url": f"/reports/{report_id}",
+        "tracking_url": f"http://localhost:3000/reports/{report_id}",
         "status": "created",
         "message": "Report accepted for verification"
     }
 
 @router.get("/", response_model=dict)
 def list_reports(bbox: str | None = None, status: str | None = None):
-    # Mock implementation
+    filtered_reports = reports_db
+
+    if status:
+        filtered_reports = [r for r in filtered_reports if r["status"] == status]
+
+    # Mock pagination
     return {
-        "data": reports_db,
-        "meta": {"page": 1, "per_page": 20, "total": len(reports_db)}
+        "data": filtered_reports,
+        "meta": {"page": 1, "per_page": 20, "total": len(filtered_reports)}
     }
 
-@router.get("/{report_id}", response_model=dict)
+@router.get("/{report_id}", response_model=ReportDetail)
 def get_report(report_id: str):
-    # Mock implementation
     report = next((r for r in reports_db if r["id"] == report_id), None)
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
