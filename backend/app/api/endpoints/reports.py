@@ -257,3 +257,19 @@ async def resolve_report(
         message="Report resolved successfully",
         data={"status": "resolved", "resolved_at": db_report.resolved_at}
     )
+
+@router.post("/{report_id}/confirm", response_model=schemas.APIResponse)
+def confirm_report(
+    report_id: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    """Confirm a report (citizen verification)."""
+    db_report = crud.confirm_report(db, report_id, current_user.id)
+    if not db_report:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    return schemas.APIResponse(
+        message="Report confirmed successfully",
+        data={"verification_score": db_report.verification_score}
+    )

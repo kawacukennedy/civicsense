@@ -1,4 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import { useAuth } from '../contexts/AuthContext'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorMessage from '../components/ErrorMessage'
 
 interface Report {
   id: string
@@ -12,9 +16,10 @@ interface Report {
 }
 
 const VolunteerDashboard = () => {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
 
-  const { data: reports, isLoading } = useQuery({
+  const { data: reports, isLoading, error, refetch } = useQuery({
     queryKey: ['reports', 'high_priority'],
     queryFn: async () => {
       const response = await fetch('http://localhost:8000/api/v1/reports?status=verified')
@@ -54,7 +59,41 @@ const VolunteerDashboard = () => {
   }
 
   if (isLoading) {
-    return <div className="p-4">Loading reports...</div>
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-bg p-4 flex items-center justify-center"
+      >
+        <div className="text-center">
+          <LoadingSpinner size="lg" message="Loading your dashboard..." />
+        </div>
+      </motion.div>
+    )
+  }
+
+  if (error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-bg p-4"
+      >
+        <div className="max-w-4xl mx-auto">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold mb-6"
+          >
+            Volunteer Dashboard
+          </motion.h1>
+          <ErrorMessage
+            message="Failed to load dashboard. Please try again."
+            onRetry={() => refetch()}
+          />
+        </div>
+      </motion.div>
+    )
   }
 
   return (

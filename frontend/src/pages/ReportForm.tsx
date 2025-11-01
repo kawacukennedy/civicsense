@@ -9,6 +9,7 @@ import LocationPicker from '../components/LocationPicker'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import SuccessMessage from '../components/SuccessMessage'
+import { useFormValidation } from '../hooks/useFormValidation'
 
 interface Location {
   lat: number
@@ -26,6 +27,27 @@ const ReportForm = () => {
   const [contact, setContact] = useState('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
+
+  const validationConfig = {
+    title: {
+      required: true,
+      minLength: 5,
+      maxLength: 140,
+    },
+    description: {
+      maxLength: 2000,
+    },
+    contact: {
+      custom: (value: string) => {
+        if (!anonymous && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && !/^\+?[\d\s-()]+$/.test(value)) {
+          return 'Please enter a valid email or phone number'
+        }
+        return null
+      },
+    },
+  }
+
+  const { getFieldError, setFieldTouched, validate, isValid } = useFormValidation(validationConfig)
 
   const createReportMutation = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -58,13 +80,23 @@ const ReportForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!title.trim()) {
-      alert('Title is required')
-      return
+    // Mark all fields as touched for validation display
+    setFieldTouched('title')
+    setFieldTouched('description')
+    if (!anonymous) {
+      setFieldTouched('contact')
     }
 
+    // Validate all fields
+    const values = { title, description, contact }
+    const validationErrors = validate(values)
+
+    // Check location separately
     if (!location) {
-      alert('Location is required')
+      validationErrors.location = 'Location is required'
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
       return
     }
 
@@ -176,7 +208,12 @@ const ReportForm = () => {
           >
             <TitleInput
               value={title}
-              onChange={setTitle}
+              onChange={(value) => {
+                setTitle(value)
+                setFieldTouched('title')
+              }}
+              onBlur={() => setFieldTouched('title')}
+              error={getFieldError('title')}
               disabled={createReportMutation.isPending}
             />
           </motion.div>
@@ -189,7 +226,12 @@ const ReportForm = () => {
           >
             <DescriptionInput
               value={description}
-              onChange={setDescription}
+              onChange={(value) => {
+                setDescription(value)
+                setFieldTouched('description')
+              }}
+              onBlur={() => setFieldTouched('description')}
+              error={getFieldError('description')}
               disabled={createReportMutation.isPending}
             />
           </motion.div>
@@ -203,6 +245,7 @@ const ReportForm = () => {
             <LocationPicker
               location={location}
               onLocationChange={setLocation}
+              error={getFieldError('location')}
               disabled={createReportMutation.isPending}
             />
           </motion.div>
@@ -241,11 +284,24 @@ const ReportForm = () => {
                 id="contact"
                 type="text"
                 value={contact}
-                onChange={(e) => setContact(e.target.value)}
+                onChange={(e) => {
+                  setContact(e.target.value)
+                  setFieldTouched('contact')
+                }}
+                onBlur={() => setFieldTouched('contact')}
                 placeholder="Email or phone"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 ${
+                  getFieldError('contact') ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+                }`}
                 disabled={createReportMutation.isPending}
+                aria-describedby={getFieldError('contact') ? "contact-error" : undefined}
+                aria-invalid={!!getFieldError('contact')}
               />
+              {getFieldError('contact') && (
+                <p id="contact-error" className="text-xs text-red-600 mt-1" role="alert">
+                  {getFieldError('contact')}
+                </p>
+              )}
             </motion.div>
           )}
 
@@ -257,7 +313,7 @@ const ReportForm = () => {
           >
             <motion.button
               type="submit"
-              disabled={createReportMutation.isPending || !title.trim() || !location}
+              disabled={createReportMutation.isPending || !isValid || !location}
               className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

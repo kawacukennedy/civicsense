@@ -165,6 +165,32 @@ def resolve_report(db: Session, report_id: str, user_id: str, resolution_notes: 
     db.refresh(db_report)
     return db_report
 
+def confirm_report(db: Session, report_id: str, user_id: str) -> Optional[models.Report]:
+    """Confirm a report (citizen verification)."""
+    db_report = get_report(db, report_id)
+    if not db_report:
+        return None
+
+    # Increase verification score slightly
+    current_score = db_report.verification_score or 0.5
+    new_score = min(current_score + 0.1, 1.0)  # Max 1.0
+    db_report.verification_score = new_score
+    db_report.updated_at = datetime.utcnow()
+
+    # Create activity log
+    activity = models.Activity(
+        id=str(uuid.uuid4()),
+        report_id=report_id,
+        user_id=user_id,
+        action="confirmed",
+        details={"verification_score": new_score}
+    )
+    db.add(activity)
+
+    db.commit()
+    db.refresh(db_report)
+    return db_report
+
 # Media CRUD operations
 def create_media_file(db: Session, media: schemas.MediaFileBase, report_id: str) -> models.MediaFile:
     """Create a media file record."""

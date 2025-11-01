@@ -9,10 +9,11 @@ interface Location {
 interface LocationPickerProps {
   location: Location | null
   onLocationChange: (location: Location) => void
+  error?: string | null
   disabled?: boolean
 }
 
-const LocationPicker = ({ location, onLocationChange, disabled }: LocationPickerProps) => {
+const LocationPicker = ({ location, onLocationChange, error, disabled }: LocationPickerProps) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -79,6 +80,11 @@ const LocationPicker = ({ location, onLocationChange, disabled }: LocationPicker
         >
           Tap map to drop pin (coming soon)
         </button>
+        {error && (
+          <p className="text-xs text-red-600 mt-1" role="alert">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   )

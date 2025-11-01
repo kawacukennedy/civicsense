@@ -1,8 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useAuth } from '../contexts/AuthContext'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
+import SkeletonLoader from '../components/SkeletonLoader'
 
 interface Report {
   id: string
@@ -16,7 +19,13 @@ interface Report {
 }
 
 const Feed = () => {
-  const { data: reports, isLoading, error } = useQuery({
+  const { user, isAuthenticated } = useAuth()
+  const queryClient = useQueryClient()
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [touchStartY, setTouchStartY] = useState(0)
+  const [isPulling, setIsPulling] = useState(false)
+
+  const { data: reports, isLoading, error, refetch } = useQuery({
     queryKey: ['reports'],
     queryFn: async () => {
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
@@ -27,6 +36,54 @@ const Feed = () => {
       return response.json()
     },
   })
+
+  const confirmMutation = useMutation({
+    mutationFn: async (reportId: string) => {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+      const token = localStorage.getItem('auth_token')
+      const response = await fetch(`${apiBaseUrl}/api/v1/reports/${reportId}/confirm`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+      if (!response.ok) {
+        throw new Error('Failed to confirm report')
+      }
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reports'] })
+    },
+  })
+
+  const handlePullToRefresh = async () => {
+    setIsRefreshing(true)
+    await refetch()
+    setIsRefreshing(false)
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartY(e.touches[0].clientY)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const currentY = e.touches[0].clientY
+    const diff = currentY - touchStartY
+
+    if (diff > 80 && window.scrollY === 0) {
+      setIsPulling(true)
+    } else {
+      setIsPulling(false)
+    }
+  }
+
+  const handleTouchEnd = () => {
+    if (isPulling) {
+      handlePullToRefresh()
+    }
+    setIsPulling(false)
+  }
 
   const getPriorityColor = (score: number) => {
     if (score >= 67) return 'bg-danger'
@@ -68,23 +125,17 @@ const Feed = () => {
             Public Feed
           </motion.h1>
           <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
+            {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-lg shadow p-4"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow p-4"
               >
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                </div>
+                <SkeletonLoader lines={2} />
               </motion.div>
             ))}
-          </div>
-          <div className="mt-8 flex justify-center">
-            <LoadingSpinner message="Loading reports..." />
           </div>
         </div>
       </motion.div>
@@ -108,7 +159,7 @@ const Feed = () => {
           </motion.h1>
           <ErrorMessage
             message="Failed to load reports. Please check your connection and try again."
-            onRetry={() => window.location.reload()}
+            onRetry={() => refetch()}
           />
         </div>
       </motion.div>
@@ -120,8 +171,22 @@ const Feed = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen bg-bg p-4"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="max-w-md mx-auto">
+        {/* Pull to Refresh Indicator */}
+        {(isRefreshing || isPulling) && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-center py-2 mb-4"
+          >
+            <LoadingSpinner size="sm" message={isRefreshing ? "Refreshing..." : "Pull to refresh"} />
+          </motion.div>
+        )}
+
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -152,10 +217,23 @@ const Feed = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.1}
+                onDragEnd={(event, info) => {
+                  const swipeThreshold = 50
+                  if (info.offset.x > swipeThreshold) {
+                    // Swipe right - could implement previous report
+                    console.log('Swipe right detected')
+                  } else if (info.offset.x < -swipeThreshold) {
+                    // Swipe left - could implement next report or action
+                    console.log('Swipe left detected')
+                  }
+                }}
               >
                 <Link to={`/reports/${report.id}`} className="block">
                   <motion.div
-                    className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-md transition-shadow touch-manipulation"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -168,15 +246,18 @@ const Feed = () => {
                     <div className="flex items-center justify-between text-sm text-muted">
                       <span>{formatTimeAgo(report.created_at)}</span>
                       <div className="flex space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault()
-                            // Handle confirm
-                          }}
-                          className="text-primary hover:underline"
-                        >
-                          👍 Confirm
-                        </button>
+                         {isAuthenticated && (
+                           <button
+                             onClick={(e) => {
+                               e.preventDefault()
+                               confirmMutation.mutate(report.id)
+                             }}
+                             disabled={confirmMutation.isPending}
+                             className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                           >
+                             {confirmMutation.isPending ? 'Confirming...' : '👍 Confirm'}
+                           </button>
+                         )}
                         <span className="text-primary">View Details →</span>
                       </div>
                     </div>
