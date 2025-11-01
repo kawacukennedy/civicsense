@@ -16,7 +16,6 @@ interface Report {
 }
 
 const VolunteerDashboard = () => {
-  const { user } = useAuth()
   const queryClient = useQueryClient()
 
   const { data: reports, isLoading, error, refetch } = useQuery({

@@ -19,7 +19,7 @@ interface Report {
 }
 
 const Feed = () => {
-  const { user, isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth()
   const queryClient = useQueryClient()
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [touchStartY, setTouchStartY] = useState(0)
@@ -220,7 +220,7 @@ const Feed = () => {
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.1}
-                onDragEnd={(event, info) => {
+                onDragEnd={(_, info) => {
                   const swipeThreshold = 50
                   if (info.offset.x > swipeThreshold) {
                     // Swipe right - could implement previous report

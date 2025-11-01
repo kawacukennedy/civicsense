@@ -13,18 +13,18 @@ interface LocationPickerProps {
   disabled?: boolean
 }
 
-const LocationPicker = ({ location, onLocationChange, error, disabled }: LocationPickerProps) => {
+const LocationPicker = ({ location, onLocationChange, error: propError, disabled }: LocationPickerProps) => {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [locationError, setLocationError] = useState<string | null>(null)
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by this browser.')
+      setLocationError('Geolocation is not supported by this browser.')
       return
     }
 
     setLoading(true)
-    setError(null)
+    setLocationError(null)
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -37,7 +37,7 @@ const LocationPicker = ({ location, onLocationChange, error, disabled }: Locatio
         setLoading(false)
       },
       () => {
-        setError('Unable to retrieve your location.')
+        setLocationError('Unable to retrieve your location.')
         setLoading(false)
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -70,8 +70,8 @@ const LocationPicker = ({ location, onLocationChange, error, disabled }: Locatio
             {location.accuracy && ` (±${location.accuracy.toFixed(0)}m)`}
           </div>
         )}
-        {error && (
-          <div className="text-sm text-danger">{error}</div>
+        {locationError && (
+          <div className="text-sm text-danger">{locationError}</div>
         )}
         <button
           type="button"
@@ -80,9 +80,9 @@ const LocationPicker = ({ location, onLocationChange, error, disabled }: Locatio
         >
           Tap map to drop pin (coming soon)
         </button>
-        {error && (
+        {propError && (
           <p className="text-xs text-red-600 mt-1" role="alert">
-            {error}
+            {propError}
           </p>
         )}
       </div>

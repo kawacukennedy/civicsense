@@ -103,10 +103,10 @@ const ReportForm = () => {
     const formData = new FormData()
     formData.append('title', title)
     formData.append('description', description)
-    formData.append('lat', location.lat.toString())
-    formData.append('lng', location.lng.toString())
-    if (location.accuracy) {
-      formData.append('accuracy_m', location.accuracy.toString())
+    formData.append('lat', location!.lat.toString())
+    formData.append('lng', location!.lng.toString())
+    if (location!.accuracy) {
+      formData.append('accuracy_m', location!.accuracy.toString())
     }
     formData.append('anonymous', anonymous.toString())
     if (!anonymous && contact) {
