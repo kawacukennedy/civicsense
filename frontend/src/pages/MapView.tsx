@@ -27,7 +27,8 @@ const MapView = () => {
   const { data: reports } = useQuery({
     queryKey: ['reports'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/v1/reports')
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiBaseUrl}/api/v1/reports`)
       if (!response.ok) {
         throw new Error('Failed to fetch reports')
       }

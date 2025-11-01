@@ -8,7 +8,8 @@ const ReportDetail = () => {
   const { data: report, isLoading } = useQuery({
     queryKey: ['report', id],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8000/api/v1/reports/${id}`)
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiBaseUrl}/api/v1/reports/${id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch report')
       }
@@ -18,7 +19,8 @@ const ReportDetail = () => {
 
   const messageMutation = useMutation({
     mutationFn: async (format: string) => {
-      const response = await fetch(`http://localhost:8000/api/v1/reports/${id}/message?format=${format}`)
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiBaseUrl}/api/v1/reports/${id}/message?format=${format}`)
       if (!response.ok) {
         throw new Error('Failed to generate message')
       }

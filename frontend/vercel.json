@@ -3,12 +3,9 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "http://localhost:8000/api/$1"
-    }
-  ],
+  "env": {
+    "VITE_API_BASE_URL": "https://civicsense-backend.onrender.com"
+  },
   "headers": [
     {
       "source": "/(.*)",
