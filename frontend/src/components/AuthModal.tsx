@@ -114,24 +114,22 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 z-50"
+            className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
           >
             <div className="p-6">
               {/* Header */}
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {mode === 'login' ? 'Welcome Back' : 'Join CivicSense'}
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {mode === 'login' ? 'Sign In' : 'Create Account'}
                 </h2>
-                <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
+                <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </motion.button>
+                </button>
               </div>
 
               {/* Form */}
@@ -211,25 +209,20 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                 )}
 
                 {/* Submit Button */}
-                <motion.button
+                <button
                   type="submit"
                   disabled={loginMutation.isPending || registerMutation.isPending}
-                  className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 transition-all duration-300 hover:scale-[1.02] disabled:hover:scale-100"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 rounded-lg font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transition-colors"
                 >
                   {(loginMutation.isPending || registerMutation.isPending) && <LoadingSpinner size="sm" />}
-                  <span className="text-lg">
+                  <span>
                     {mode === 'login' ? 'Sign In' : 'Create Account'}
                   </span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </motion.button>
+                </button>
               </form>
 
               {/* Mode Toggle */}
-              <div className="mt-8 text-center">
+              <div className="mt-6 text-center">
                 <button
                   onClick={() => {
                     setMode(mode === 'login' ? 'register' : 'login')
@@ -237,7 +230,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     loginMutation.reset()
                     registerMutation.reset()
                   }}
-                  className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 font-medium transition-colors hover:underline underline-offset-4"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white font-medium transition-colors"
                 >
                   {mode === 'login'
                     ? "Don't have an account? Sign up"

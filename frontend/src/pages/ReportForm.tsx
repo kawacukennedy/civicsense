@@ -140,7 +140,7 @@ const ReportForm = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4"
+      className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4"
     >
       <div className="max-w-md mx-auto">
         <motion.div
@@ -149,7 +149,7 @@ const ReportForm = () => {
           transition={{ delay: 0.1 }}
           className="text-center mb-8"
         >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Report an Issue
           </h1>
           <p className="text-gray-600 dark:text-gray-300">Help make your community better</p>
@@ -170,7 +170,7 @@ const ReportForm = () => {
 
         <motion.form
           onSubmit={handleSubmit}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-6 space-y-6"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 space-y-6"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.4 }}
@@ -317,9 +317,9 @@ const ReportForm = () => {
             <motion.button
               type="submit"
               disabled={createReportMutation.isPending || !isValid || !location}
-              className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white py-4 rounded-xl font-semibold shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 transition-all duration-300 hover:scale-[1.02] disabled:hover:scale-100"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 rounded-lg font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transition-colors"
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
             >
               {createReportMutation.isPending ? (
                 <>
@@ -327,12 +327,7 @@ const ReportForm = () => {
                   <span>Submitting Report...</span>
                 </>
               ) : (
-                <>
-                  <span>Submit Report</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                </>
+                <span>Submit Report</span>
               )}
             </motion.button>
           </motion.div>
