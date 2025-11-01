@@ -35,7 +35,7 @@ CivicSense is a mobile-first web app that allows citizens to report civic and cl
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/yourusername/civicsense.git
+   git clone https://github.com/kawacukennedy/civicsense.git
    cd civicsense
    ```
 
