@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation } from '@tanstack/react-query'
 import LoadingSpinner from './LoadingSpinner'
-import ErrorMessage from './ErrorMessage'
 import { useFormValidation } from '../hooks/useFormValidation'
 
 interface AuthModalProps {
@@ -350,10 +349,8 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                     setFormData({ email: '', password: '', name: '', confirmPassword: '' })
                     loginMutation.reset()
                     registerMutation.reset()
-                    // Reset validation state
-                    Object.keys(validationConfig).forEach(field => {
-                      // Reset touched state by clearing errors
-                    })
+                     // Reset validation state
+                     // TODO: Implement proper validation reset
                   }}
                   className="mt-4 text-gray-900 dark:text-white font-semibold hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
                 >
