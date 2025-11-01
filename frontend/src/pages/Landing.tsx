@@ -24,6 +24,7 @@ const Landing = () => {
           <div className="flex space-x-4">
             <Link to="/map" className="text-primary hover:underline text-sm">Map</Link>
             <Link to="/feed" className="text-primary hover:underline text-sm">Feed</Link>
+            <Link to="/volunteer" className="text-primary hover:underline text-sm">Volunteer</Link>
           </div>
         </div>
       </header>
