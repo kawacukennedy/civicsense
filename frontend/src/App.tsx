@@ -1,18 +1,21 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
-import Landing from './pages/Landing'
-import ReportForm from './pages/ReportForm'
-import MapView from './pages/MapView'
-import Feed from './pages/Feed'
-import VolunteerDashboard from './pages/VolunteerDashboard'
-import ReportDetail from './pages/ReportDetail'
 import AuthModal from './components/AuthModal'
+import LoadingSpinner from './components/LoadingSpinner'
 import './App.css'
+
+// Lazy load pages for better bundle splitting
+const Landing = lazy(() => import('./pages/Landing'))
+const ReportForm = lazy(() => import('./pages/ReportForm'))
+const MapView = lazy(() => import('./pages/MapView'))
+const Feed = lazy(() => import('./pages/Feed'))
+const VolunteerDashboard = lazy(() => import('./pages/VolunteerDashboard'))
+const ReportDetail = lazy(() => import('./pages/ReportDetail'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,18 +50,20 @@ function AppContent() {
   return (
     <>
       <div className="min-h-screen bg-bg font-sans dark:bg-gray-900 dark:text-white">
-        <Routes>
-          <Route path="/" element={<Landing onAuthClick={() => setAuthModalOpen(true)} />} />
-          <Route path="/report" element={<ReportForm />} />
-          <Route path="/map" element={<MapView />} />
-          <Route path="/feed" element={<Feed />} />
-          <Route path="/volunteer" element={
-            <ProtectedRoute requiredRole="volunteer">
-              <VolunteerDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/reports/:id" element={<ReportDetail />} />
-        </Routes>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><LoadingSpinner size="lg" /></div>}>
+          <Routes>
+            <Route path="/" element={<Landing onAuthClick={() => setAuthModalOpen(true)} />} />
+            <Route path="/report" element={<ReportForm />} />
+            <Route path="/map" element={<MapView />} />
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/volunteer" element={
+              <ProtectedRoute requiredRole="volunteer">
+                <VolunteerDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/reports/:id" element={<ReportDetail />} />
+          </Routes>
+        </Suspense>
       </div>
 
       <AuthModal
